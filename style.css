@@ -1,0 +1,33 @@
+
+body{
+    background-color: #F7F0F5;
+    text-align: center;
+    color:#433633;
+
+}
+
+h1{
+    text-align: center;
+    color:#433633;
+}
+
+
+.navbar{
+    background-color: #5C5552;
+    color:#F7F0F5;
+    overflow: hidden;
+}
+
+.navbar a {
+  
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
