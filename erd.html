@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+   
+        <link rel="style" type="text/css" href="style.css" />
+    
+    <body>
+
+        <div class="navbar">
+            <a class="active" href="index.php">Home</a>
+            <a class="active" href="about.html">Authors</a>
+            <a class="active" href="erd.html">Diagrams</a>
+            
+          </div>
+        <h2>ERD:</h2>
+        <img src="kms.png">
+        <h2>List of Queries: </h2>
+        <p>
+Create Tables: <br>
+CREATE TABLE categories(
+  cat varchar(255) NOT NULL,
+  PRIMARY KEY (cat)
+);
+<br><br>
+CREATE TABLE tasks(
+  taskid int NOT NULL AUTO_INCREMENT,
+  taskdesc varchar(255) NOT NULL,
+  duedate varchar(255) NOT NULL,
+  cat varchar(255),
+  priority int,
+  taskstatus varchar(255) DEFAULT 'active',
+  PRIMARY KEY (taskid),
+  FOREIGN KEY (cat) REFERENCES categories (cat),
+  CHECK (priority >=1 AND priority <=4)
+);
+
+        </p>
+        <br><br>
+        
+        <p>
+            Display Tasks: <br>
+$sql = "SELECT * FROM task_table";
+$result = mysqli_query($conn, $sql);
+<br><br> Add Tasks: <br>
+$completed = isset($_POST['completed']) ? 1 : 0;
+$stmt = mysqli_prepare($conn, "INSERT INTO task_table (task_name, description, due_date, category, priority, completed) VALUES (?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "ssssii", $task_name, $description, $due_date, $category, $priority, $completed);
+        mysqli_stmt_execute($stmt);
+<br><br> Delete Tasks: <br>
+        $stmt = mysqli_prepare($conn,"DELETE FROM task_table WHERE task_name=?");
+        mysqli_stmt_bind_param($stmt,"s",$task_name);
+<br><br> Display Categories: <br>
+$sql = "SELECT name FROM category_table";
+$result = mysqli_query($conn, $sql);
+<br><br> Delete Categories:<br>
+$stmt = mysqli_prepare($conn,"DELETE FROM category_table WHERE name=?");
+$sql = "UPDATE task_table SET category = REPLACE(category, '$name', ' ');";
+$sql = "UPDATE task_table SET category = REPLACE(category, 'woot', ' ');";
+$result = mysqli_query($conn, $sql);
+
+     <br><br>       
+        </p>
+        
+        
+        <p>
+            <br>
+1. The default list view of the application will show overdue tasks and due-today tasks. Tasks will be sorted by priority<br><br>
+SELECT * FROM tasks
+WHERE (status = 'active') AND (due_date <= CURDATE())
+OR (due_date = CURDATE())
+ORDER BY priority DESC;<br><br>
+2.The user can select other views based on the day:<br><br>
+a.due-today tasks. Tasks will be sorted by priority.<br><br>
+SELECT * FROM tasks
+WHERE (status = 'active') AND (due_date = CURDATE())
+ORDER BY priority DESC;<br><br>
+b.due-tomorrow tasks. Tasks will be sorted by priority.<br><br>
+SELECT * FROM tasks
+WHERE (status = 'active') AND (due_date = DATE_ADD(CURDATE(), INTERVAL 1 DAY))
+ORDER BY priority DESC;<br><br>
+c.due within the next 7 days. Tasks will be sorted by day and priority.<br><br>
+SELECT * FROM tasks
+WHERE (status = 'active') AND (due_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY))
+ORDER BY due_date ASC, priority DESC;<br><br>
+3. The user can select a report for a specific week. This report will show the day and the total number of tasks completed per day.<br><br>
+SELECT DATE_FORMAT(due_date, '%Y-%m-%d') AS due_day, COUNT(*) AS completed_tasks
+FROM tasks
+WHERE (status = 'completed') AND (due_date BETWEEN :start_date AND :end_date)
+GROUP BY due_day;
+<br><br>
+  
+        </p>
+        
+    </body>
+    
+
+</html>
+<style>
+    body{
+    background-color: #F7F0F5;
+    text-align: center;
+    color:#433633;
+
+}
+
+h1{
+    text-align: center;
+    color:#433633;
+}
+p{
+   margin-left:125px;
+   margin-right:125px;
+}
+
+.navbar{
+    background-color: #5C5552;
+    color:#F7F0F5;
+    overflow: hidden;
+}
+
+.navbar a {
+  
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+</style>
